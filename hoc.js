@@ -85,14 +85,138 @@ function flat (arr) {
 }
 
 //斐波拉契数列
-function fib () {
+function fib (n) {
+  if (n === 1 || n === 2) return n
 
+  return fib(n - 1) + fib(n - 2)
+}
+
+//fib缓存优化
+function fib (n) {
+  let res = [0, 1, 1]
+
+
+  let _fib = function (n) {
+    if (!res[n]) {
+      res[n] = _fib(n - 1) + _fib(n - 2)
+    }
+
+    return res[n]
+  }
+
+  return _fib(n)
+}
+
+//apply
+Function.prototype.myApply = function () {
+  var context = arguments[0] || window;
+
+  context.fn = this;
+  let args = arguments[1] || [];
+  let result = context.fn(args);
+  delete context.fn;
+
+  return result
+}
+//call
+Function.prototype.myCall = function () {
+  var context = arguments[0] || window;
+
+  context.fn = this;
+  var args = [...arguments].slice(1);
+  var result = context.fn(args)
+  delete context.fn
+  return result
 }
 
 //bind
+Function.prototype.myBind = function () {
+  var _this = this;
+  var context = arguments[0];
+  var args = [].slice.call(arguments, 1);
 
-//apply
+  if (typeof _this !== 'function') {
+    throw new TypeError("not a function")
+  }
 
-//call
+  var bound = function () {
+    if (this instanceof bound) {
+      return _this.apply(this, args.concat([].slice.call(arguments)))
+    } else {
+      return _this.apply(context, args.concat([].slice.call(argument)))
+    }
+  }
+
+  //继承
+  var f = function () { }
+
+  f.prototype = _this.prototype;
+  bound.prototype = new f()
+
+  return bound
+}
+
+//setInterval
+var mySetInterval = function (fn, a, b) {
+  this.a = a;
+  this.b = b;
+  this.handler = -1;
+  this.timer = 0;
+
+  this.start = () => {
+    this.handler = setTimeout(() => {
+      fn();
+      this.timer++;
+      this.start();
+    }, this.a + this.b * this.timer)
+  }
+
+  this.stop = () => {
+    clearTimeout(this.handler)
+    this.timer = 0
+  }
+}
+
+class mySetInterval {
+  constructor(fn, a, b) {
+    this.fn = fn;
+    this.a = a;
+    this.b = b;
+    this.timer = 0;
+    this.handler = -1;
+  }
+
+  start () {
+    this.handler = setTimeout(() => {
+      this.fn();
+      this.timer++;
+      this.start()
+    }, this.a + this.b * timer)
+  }
+
+  stop () {
+    clearTimeout(this.handler);
+    this.timer = 0
+  }
+}
 
 //promise
+var PENDING = 'pending';
+var FULFILLED = 'fulfilled';
+var REJECTED = 'rejected';
+
+class myPromise {
+  constructor() {
+    //init
+    this.status = PENDING
+
+
+    this.resolve = function () {
+
+    }
+
+    this.reject = function () {
+
+    }
+  }
+}
