@@ -206,17 +206,57 @@ var FULFILLED = 'fulfilled';
 var REJECTED = 'rejected';
 
 class myPromise {
-  constructor() {
+  constructor(executor) {
     //init
     this.status = PENDING
+    this.value = undefined //resolved
+    this.error = undefined //rejected
+
+    //收集回调
+    this.onResolvedCallbacks = []
+    this.onRejectedCallbacks = []
 
 
-    this.resolve = function () {
-
+    let resolve = (value) => {
+      if (this.status === PENDING) {
+        this.status = FULFILLED
+        this.value = value
+        this.onResolvedCallbacks.forEach(fn => fn())
+      }
     }
 
-    this.reject = function () {
+    let reject = (error) => {
+      if (this.status === PENDING) {
+        this.status = REJECTED
+        this.error = error
+        this.onRejectedCallbacks.forEach(fn => fn())
+      }
+    }
 
+    try {
+      executor(resolve, reject)
+    } catch (err) {
+      reject(err)
+    }
+  }
+
+  then (onFulfilled, onRejected) {
+    if (this.status === FULFILLED) {
+      onFulfilled(this.value)
+    }
+
+    if (this.status === REJECTED) {
+      onRejected(this.error)
+    }
+
+    if (this.status === PENDING) {
+      this.onRejectedCallbacks.push(() => {
+        onFulfilled(this.value)
+      })
+
+      this.onRejectedCallbacks.push(() => {
+        onRejected(this.error)
+      })
     }
   }
 }
