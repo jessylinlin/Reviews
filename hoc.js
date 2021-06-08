@@ -260,3 +260,71 @@ class myPromise {
     }
   }
 }
+
+
+//async/await
+const getData = () =>
+  new Promise(resolve =>
+    setTimeout(() => resolve("data")
+      , 1000)
+  )
+
+async function test () {
+  const data = await getData();
+  console.log('data: ' + data)
+
+  const data2 = await getData()
+  console.log('data2: ' + data)
+
+
+  console.log('success')
+  return 'success-then'
+}
+
+
+function* testG () {
+  // await被编译成了yield
+  const data = yield getData()
+  console.log('data: ', data);
+  const data2 = yield getData()
+  console.log('data2: ', data2);
+  return 'success'
+}
+
+console.log('script start');
+
+setTimeout(function () {
+  console.log('timeout1');
+}, 10);
+
+new Promise(resolve => {
+  console.log('promise1');
+
+  setTimeout(() => console.log('timeout2'), 10);
+  resolve();
+}).then(function () {
+  console.log('then1')
+})
+
+console.log('script end');
+
+async function async1 () {
+  console.log("async1 start");  //(2)        
+  await async2();
+  console.log("async1 end");   //(6)    
+}
+async function async2 () {
+  console.log('async2');   //(3)     
+}
+console.log("script start");  //(1)      
+setTimeout(function () {
+  console.log("settimeout");  //(8)      
+}, 0);
+async1();
+new Promise(function (resolve) {
+  console.log("promise1");   //(4)         
+  resolve();
+}).then(function () {
+  console.log("promise2");    //(7)    
+});
+console.log('script end');//(5)
