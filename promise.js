@@ -76,7 +76,6 @@ Promise.myall = function (arr) {
   let promises = [...arr] //Array.from(arr)
   const results = [];
   let count = 0;
-
   return new Promise((resolve, reject) => {
     for (let i = 0; i < promises.length; i++) {
       let promise = promises[i];
@@ -95,6 +94,18 @@ Promise.myall = function (arr) {
   })
 }
 
-Promise.prototype.myFinally = function () {
-
+Promise.prototype.myFinally = function (callback) {
+  return this.then(
+    (value) => {
+      return Promise.resolve(callback()).then(() => {
+        return value
+      })
+    },
+    (error) => {
+      return Promise.resolve(callback()).then(() => {
+        throw error
+      })
+    })
 }
+
+

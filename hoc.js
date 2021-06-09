@@ -328,3 +328,108 @@ new Promise(function (resolve) {
   console.log("promise2");    //(7)    
 });
 console.log('script end');//(5)
+
+
+//防抖
+const debounce = function (func, delay) {
+  let timer = null
+  return function (...args) {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
+  }
+}
+
+//节流
+const throttle = function (func, delay) {
+  let previous = 0;
+  return function (...args) {
+    let now = new Date().getTime();
+    if (now - previous > wait) {
+      func.apply(this, args)
+      previous = now
+    }
+  }
+}
+
+var testobj = {
+  id: 'abc',
+  nested_obj: {
+    f_f: 123
+  },
+  nested_arr: [1, 2],
+  nested_arr_and_obj: [
+    {
+      a_a: 'aa',
+      b_b: {
+        c_c: 'cc'
+      }
+    },
+    {
+      d_d: false
+    }
+  ]
+}
+
+
+//下划线转驼峰
+function camelString (str) {
+  return str.replace(/_(\w)/g, (words, letter) => {
+    return letter.toUpperCase()
+  })
+}
+
+//递归遍历json
+function camelObj (obj) {
+  if (Array.isArray(obj)) {
+    for (let val of obj) {
+      camelObj(val)
+    }
+  } else if (obj.constructor === Object) {
+    for (let key in obj) {
+      if (!obj.hasOwnProperty(key)) {
+        return
+      }
+
+      let newKey = camelString(key);
+
+      if (newKey !== key) {
+        obj[newKey] = obj[key];
+        delete obj[key]
+      }
+
+      camelObj(obj[newKey])
+    }
+  }
+}
+
+//驼峰转下划线
+function underlineString (str) {
+  return str.replace(/[A-Z]/g, (words) => {
+    return '_' + words.toLowerCase()
+  })
+}
+
+function underlineObj (obj) {
+  if (Array.isArray(obj) && Object.prototype.toString.apply(obj) === '[object Array]') {
+    for (let val of obj) {
+      underlineObj[val]
+    }
+  } else if (obj.constructor === Object && Object.prototype.toString.call(obj) === '[object Object]') {
+    for (let key in obj) {
+      if (!obj.hasOwnProperty(key)) {
+        return
+      }
+
+      let newKey = underlineString(key);
+
+      if (newKey !== key) {
+        obj[newKey] = obj[key]
+        delete obj[key]
+      }
+
+      underlineObj(obj[newKey])
+    }
+  }
+}
